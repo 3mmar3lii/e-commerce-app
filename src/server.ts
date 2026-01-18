@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import { connectDB } from "./config/db";
 import morgan from "morgan";
 import { app } from "./app";
 
-const PORT: string = process.env.PORT!;
-
-dotenv.config();
+const PORT: string = process.env.PORT || "3000";
 connectDB();
 
 app.use(morgan("combined"));
