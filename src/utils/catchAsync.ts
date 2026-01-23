@@ -1,12 +1,33 @@
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import { ParsedQs } from "qs";
 
-// src/utils/catchAsync.ts
-import { AsyncRequestHandler } from '../types';
+type AsyncHandler<
+  TReq extends Request = Request,
+  TRes extends Response = Response,
+  TParams = Record<string, string>,
+  TResBody = any,
+  TReqBody = any,
+  TReqQuery = ParsedQs,
+> = (
+  req: TReq,
+  res: TRes,
+  next: NextFunction,
+  ) => Promise<TResBody | void>;
 
-const catchAsync = (fn: AsyncRequestHandler) => {
-  return (req: any, res: any, next: any) => {
-    // Execute the async function and catch any unhandled promise rejection
-    Promise.resolve(fn(req, res, next)).catch(next);
+export const catchAsync = <
+  TReq extends Request = Request,
+  TRes extends Response = Response,
+  TParams = Record<string, string>,
+  TResBody = any,
+  TReqBody = any,
+  TReqQuery = ParsedQs,
+>(
+  fn: AsyncHandler<TReq, TRes, TParams, TResBody, TReqBody, TReqQuery>,
+): RequestHandler<TParams, TResBody, TReqBody, TReqQuery> => {
+  return (req, res, next) => {
+    Promise.resolve(fn(req as unknown as TReq, res as TRes, next)).catch(next);
   };
 };
 
+// Default export for backward compatibility
 export default catchAsync;

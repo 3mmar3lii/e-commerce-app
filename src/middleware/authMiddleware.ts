@@ -3,7 +3,8 @@ import  { JwtPayload } from "jsonwebtoken";
 import AppError from "../utils/AppError";
 import { User } from "../models/User.Model";
 import { verifyJwtToken } from "../utils/jwtUtils";
-import { AuthRequestCurrentUser } from "../types";
+import { AuthRequestCurrentUser, UserRole } from "../types/auth.types";
+
 
 export const protect = async (
   req: Request,
@@ -49,9 +50,7 @@ export const protect = async (
   }
 };
 
-export const restrictTo = (
-  ...allowedRoles: ("user" | "admin" | "seller")[]
-) => {
+export const restrictTo = (...allowedRoles: UserRole[]) => {
   return (
     req: AuthRequestCurrentUser,
     res: Response,

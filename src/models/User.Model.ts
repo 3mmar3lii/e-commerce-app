@@ -6,7 +6,6 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email format"],
@@ -16,6 +15,15 @@ const userSchema = new Schema(
       required: true,
       minlength: 8,
       select: false,
+    },
+    confirmPassword: {
+      type: String,
+      validate: {
+        validator: function (val: string) {
+          return val === this.password;
+        },
+        message: "Passwords are not the same!",
+      },
     },
     name: {
       type: String,
@@ -28,9 +36,9 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin", "seller"],
+      enum: ["customer", "admin", "seller"],
       message: "Please provide role from options",
-      default: "user",
+      default: "customer",
     },
     active: {
       type: Boolean,
@@ -52,6 +60,6 @@ userSchema.methods.comparePassword = async function (
   return await comparePasswords(candidatePassword, this.password);
 };
 
-userSchema.index({ email: 1 });
+userSchema.index({ email: 1 }, { unique: true });
 
 export const User = models.User || model("User", userSchema);

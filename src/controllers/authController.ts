@@ -2,14 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import { AuthService } from "../services/authService";
 import createJwtToken from "../utils/jwtUtils";
-import { IUserSignupInput } from "../types";
+import { IUserSignupInput } from "../types/auth.types";
+import AppError from "../utils/AppError";
 
 function createSendToken(
   user: IUserSignupInput,
   statusCode: number,
   res: Response,
 ) {
-  const token = createJwtToken(user._id);
+  const token = createJwtToken(user._id!);
   const cookieOptions = {
     expires: new Date(
       Date.now() +
@@ -29,9 +30,12 @@ function createSendToken(
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password, name } = req.body;
+    const { email, password, name, role, confirmPassword } = req.body;
+    if (!confirmPassword || password !== confirmPassword) {
+      throw new AppError("Password confirmation failed", 400);
+    }
 
-    const user = await AuthService.signup(email, password, name);
+    const user = await AuthService.signup(email, password, name, role);
 
     // Remove password from response
     user.password = undefined;
@@ -43,6 +47,6 @@ export const signup = catchAsync(
 export const signin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = await AuthService.signin(req.body);
-    createSendToken(userData,200,res)
+    createSendToken(userData, 200, res);
   },
 );

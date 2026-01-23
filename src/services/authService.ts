@@ -1,5 +1,5 @@
 import { User } from "../models/User.Model";
-import { IUserSigninInput, IUserSignupInput } from "../types";
+import { IUserSigninInput, IUserSignupInput } from "../types/auth.types";
 import AppError from "../utils/AppError";
 
 export class AuthService {
@@ -7,14 +7,14 @@ export class AuthService {
     email: string,
     password: string,
     name: string,
+    role: string,
   ): Promise<IUserSignupInput> {
-    const user = await User.create({ email, password, name });
+    const user = await User.create({ email, password, name, role });
     return user;
   }
 
-  static async signin(
-    { email, password }: IUserSigninInput,
-  ) {
+  static async signin({ email, password }: IUserSigninInput) {
+    
     if (!email || !password) {
       throw new AppError("Please provide email and password", 400);
     }
@@ -26,12 +26,10 @@ export class AuthService {
     }
 
     const userResponse = {
-      _id: user._id.toString(),
       email: user.email,
       name: user.name,
       role: user.role,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
     };
     return userResponse;
   }

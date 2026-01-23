@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.ts",
     "build": "tsc",
+    "seed:import": "ts-node src/data/import-dev-data.ts --import",
+    "seed:delete": "ts-node src/data/import-dev-data.ts --delete",
     "start": "node dist/server.js"
   },
   "keywords": [],
