@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import AppError from "./AppError";
 import catchAsync from "./catchAsync";
 import { APIFeatures } from "../services/apiFeatures";
+import populateOptions from "../helpers/populateOpions";
 
-interface GetOneOptions {
+export interface GetOneOptions {
   select?: string;
   populate?: PopulateOptions | (string | PopulateOptions)[];
   excludeFields?: string[];
@@ -12,21 +13,13 @@ interface GetOneOptions {
 
 export const getOne = <T extends Document>(
   Model: Model<T>,
-  options: GetOneOptions = {},
+  options: PopulateOption[] | [],
 ) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let query = Model.findById(req.params.id);
-
-    if (options.select) {
-      query = query.select(options.select) as any;
-    }
-
-    if (options.populate) {
-      query = query.populate(options.populate);
-    }
-
+    query = populateOptions(options, query);
     const doc = await query;
-
+    console.log("final documetn", doc);
     if (!doc) {
       return next(new AppError("No document found with this ID", 404));
     }
@@ -79,14 +72,20 @@ export const deleteOne = <T extends Document>(Model: Model<T>) => {
   });
 };
 
+export type PopulateOption = {
+  path: string;
+  select?: string;
+  populate?: PopulateOption | PopulateOption[]; // For nested populate
+};
 export const getAll = <T extends Document>(
   Model: Model<T>,
+  options: PopulateOption[] | [],
 ) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // Build base query
-    const query = Model.find();
+    let query = Model.find();
+    query = populateOptions(options, query);
 
-    const features = new APIFeatures(query as any, req.query,Model as any)
+    const features = new APIFeatures(query as any, req.query, Model as any)
       .filter()
       .search()
       .sort()

@@ -10,8 +10,8 @@ import {
 const addProduct = createOne(ProductModel);
 const deleteProduct = deleteOne(ProductModel);
 const editProduct = updateOne(ProductModel);
-const getSingleProduct = getOne(ProductModel);
-const getAllProducts = getAll(ProductModel); 
+const getSingleProduct = getOne(ProductModel,[]);
+const getAllProducts = getAll(ProductModel,[]); 
 
 export {
   addProduct,

@@ -24,8 +24,8 @@ export class AuthService {
       // Generic error to prevent user enumeration
       throw new AppError("Invalid email or password", 401);
     }
-
     const userResponse = {
+      _id:user._id,
       email: user.email,
       name: user.name,
       role: user.role,

@@ -1,15 +1,15 @@
-import { Document } from "mongoose";
 import { CartModel } from "../models/Cart.Model";
 import ProductModel from "../models/Product.Model";
 import { ICartItem } from "../types/cart.types";
 import AppError from "../utils/AppError";
 
 class CartService {
-
   async addProduct(userId: string, productId: string, quantity: number) {
     if (quantity <= 0) throw new AppError("Quantity must be at least 1", 400);
 
-    let cart = await CartModel.findOne({ userId });
+    let cart = await CartModel.findOne({ userId })
+      .populate("items.productId", "name price ")
+      .populate("userId", "name email");
     if (!cart) {
       cart = await CartModel.create({ userId });
     }
@@ -61,4 +61,4 @@ class CartService {
   }
 }
 
-export default  CartService;
+export default CartService;
