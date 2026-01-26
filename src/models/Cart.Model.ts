@@ -1,11 +1,14 @@
 import { Schema, model, models } from "mongoose";
 import { ICart, ICartItem } from "../types/cart.types";
 
-export const CartItemSchema = new Schema({
-  productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-  quantity: { type: Number, min: 1, max: 100 },
-  priceAtTimeOfAdd: { type: Number, min: 0 },
-});
+export const CartItemSchema = new Schema(
+  {
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, min: 1, max: 100 },
+    priceAtTimeOfAdd: { type: Number, min: 0 },
+  },
+  { _id: false },
+);
 
 const CartSchema = new Schema<ICart>(
   {
@@ -35,7 +38,7 @@ const CartSchema = new Schema<ICart>(
     },
     status: {
       type: String,
-      enum: ["active", "converted", "expired"],
+      enum: ["active", "completed"],
       default: "active",
     },
     expiresAt: {
@@ -51,7 +54,7 @@ const CartSchema = new Schema<ICart>(
 
 // Ensure indexes
 CartSchema.index({ userId: 1 });
-CartSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 3600 * 5 }); 
+CartSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 3600 * 5 });
 
 CartSchema.virtual("calculatedTotalPrice").get(function (this: ICart) {
   return this.items.reduce((sum: number, item: ICartItem) => {
