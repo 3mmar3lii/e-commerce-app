@@ -7,6 +7,7 @@ import AppError from "./utils/AppError";
 import authRoutes from "./routes/userRoutes"
 import productsRoutes from "./routes/productRoutes"
 import cartRoutes from "./routes/cartRoutes";
+import orderRoutes from "./routes/orderRoutes";
 
 const app = express();
 app.use(helmet());
@@ -22,6 +23,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/products",productsRoutes);
 app.use("/api/v1/users", authRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/order", orderRoutes);
 
 app.use("{/*any/}", (req, res, next: NextFunction) => {
   const err = new AppError(
