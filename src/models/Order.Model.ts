@@ -33,7 +33,15 @@ const OrderSchema = new mongoose.Schema(
     },
     discountAmount: { type: Number, default: 0 },
     discountCode: { type: String },
-
+    cancelReason: {
+      type: String,
+      enum: [
+        "USER_CANCELLED",
+        "PAYMENT_TIMEOUT",
+        "OUT_OF_STOCK",
+        "ADMIN_CANCELLED",
+      ],
+    },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed", "refunded"],
@@ -66,6 +74,16 @@ OrderSchema.pre("save", async function () {
     throw new AppError("Cannot modify order items or total after payment", 400);
   }
 });
+
+// Prevent cancel paid order
+OrderSchema.pre("save", function (this) {
+  if (this.isModified("status") && this.status === "CANCELLED") {
+    if (["paid", "refunded"].includes(this.paymentStatus)) {
+      return new AppError("Paid orders cannot be cancelled", 400);
+    }
+  }
+});
+
 
 export const OrderModel =
   models.Order || mongoose.model<IOrder>("Order", OrderSchema);
