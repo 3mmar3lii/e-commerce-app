@@ -13,6 +13,10 @@ export const createOrder = catchAsync(
       req.currentUser?._id,
       req.params?.id as string,
     );
+
+    res.status(201).json({
+      status: "sucess",
+      data: order,
+    });
   },
 );
-

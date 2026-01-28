@@ -1,7 +1,7 @@
 import { CartModel } from "../models/Cart.Model";
 import { OrderModel } from "../models/Order.Model";
 import ProductModel from "../models/Product.Model";
-import { ICart, ICartItem } from "../types/cart.types";
+import {  ICartItem } from "../types/cart.types";
 import AppError from "../utils/AppError";
 
 class OrderService {
@@ -22,8 +22,8 @@ class OrderService {
     const productMap = new Map(products.map((p) => [p._id.toString(), p]));
     const orderItems = [];
 
-    for (const item of cart.items) {
-      const product = productMap.get(item?.productId.toString());
+    for (const item of cart.items) { // O(n)
+      const product = productMap.get(item?.productId.toString());// O(1)
 
       if (!product) {
         throw new AppError(`Product ${item?.productId} no longer exists`, 400);
