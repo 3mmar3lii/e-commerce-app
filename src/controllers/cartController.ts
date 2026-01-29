@@ -5,7 +5,7 @@ import AppError from "../utils/AppError";
 import { catchAsync } from "../utils/catchAsync";
 import { getOne } from "../utils/handlerFactory";
 import { CartModel } from "../models/Cart.Model";
-import { CART_POPULATION } from "../utils/cartPopulation";
+import { CART_POPULATION } from "../utils/populationPaths";
 
 export const addToCart = catchAsync(
   async (req: AuthRequestCurrentUser, res: Response, next: NextFunction) => {

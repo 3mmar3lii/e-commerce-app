@@ -8,6 +8,7 @@ import authRoutes from "./routes/userRoutes"
 import productsRoutes from "./routes/productRoutes"
 import cartRoutes from "./routes/cartRoutes";
 import orderRoutes from "./routes/orderRoutes";
+import categoryRoutes from "./routes/categoryRoutes";
 
 const app = express();
 app.use(helmet());
@@ -24,6 +25,7 @@ app.use("/api/v1/products",productsRoutes);
 app.use("/api/v1/users", authRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/category", categoryRoutes);
 
 app.use("{/*any/}", (req, res, next: NextFunction) => {
   const err = new AppError(

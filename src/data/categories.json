@@ -1,0 +1,162 @@
+[
+  {
+    "id": "1",
+    "name": "Electronics",
+    "slug": "electronics",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "2",
+    "name": "Audio",
+    "slug": "audio",
+    "parentId": "1",
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "3",
+    "name": "Earbuds",
+    "slug": "earbuds",
+    "parentId": "2",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "4",
+    "name": "Headphones",
+    "slug": "headphones",
+    "parentId": "2",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "5",
+    "name": "Wearables",
+    "slug": "wearables",
+    "parentId": "1",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "6",
+    "name": "Clothing",
+    "slug": "clothing",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "7",
+    "name": "T-Shirts",
+    "slug": "t-shirts",
+    "parentId": "6",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "8",
+    "name": "Shoes",
+    "slug": "shoes",
+    "parentId": "6",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "9",
+    "name": "Home & Office",
+    "slug": "home-office",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "10",
+    "name": "Desk Lamps",
+    "slug": "desk-lamps",
+    "parentId": "9",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "11",
+    "name": "Yoga & Fitness",
+    "slug": "yoga-fitness",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "12",
+    "name": "Yoga Mats",
+    "slug": "yoga-mats",
+    "parentId": "11",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "13",
+    "name": "Kitchen & Dining",
+    "slug": "kitchen-dining",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "14",
+    "name": "Water Bottles",
+    "slug": "water-bottles",
+    "parentId": "13",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "15",
+    "name": "Lunch Boxes",
+    "slug": "lunch-boxes",
+    "parentId": "13",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "16",
+    "name": "Mugs",
+    "slug": "mugs",
+    "parentId": "13",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "17",
+    "name": "Stationery",
+    "slug": "stationery",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "18",
+    "name": "Notebooks",
+    "slug": "notebooks",
+    "parentId": "17",
+    "isLeaf": true,
+    "isActive": true
+  },
+  {
+    "id": "19",
+    "name": "Garden & Outdoor",
+    "slug": "garden-outdoor",
+    "parentId": null,
+    "isLeaf": false,
+    "isActive": true
+  },
+  {
+    "id": "20",
+    "name": "Garden Lights",
+    "slug": "garden-lights",
+    "parentId": "19",
+    "isLeaf": true,
+    "isActive": true
+  }
+]
