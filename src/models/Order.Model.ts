@@ -37,6 +37,7 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       enum: [
         "USER_CANCELLED",
+        "USER_EDITED",
         "PAYMENT_TIMEOUT",
         "OUT_OF_STOCK",
         "ADMIN_CANCELLED",
@@ -65,6 +66,11 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+OrderSchema.index({ userId: 1 }); 
+OrderSchema.index({ status: 1, paymentStatus: 1 }); 
+OrderSchema.index({ 'orderItems.productId': 1 }); 
+OrderSchema.index({ orderNumber: 1 }, { unique: true });
+
 //  Once paid, block changes to items/total
 OrderSchema.pre("save", async function () {
   if (
@@ -79,7 +85,7 @@ OrderSchema.pre("save", async function () {
 OrderSchema.pre("save", function (this) {
   if (this.isModified("status") && this.status === "CANCELLED") {
     if (["paid", "refunded"].includes(this.paymentStatus)) {
-      return new AppError("Paid orders cannot be cancelled", 400);
+      throw new AppError("Paid orders cannot be cancelled", 400);
     }
   }
 });

@@ -5,6 +5,7 @@ import ProductModel from "../models/Product.Model";
 import { ICartItem } from "../types/cart.types";
 import AppError from "../utils/AppError";
 import mongoose from "mongoose";
+import StockReservationService from "./StockReservationService";
 
 class OrderService {
   private cartId: string;
@@ -13,6 +14,7 @@ class OrderService {
     this.userId = userId;
     this.cartId = cartId;
   }
+
   async createOrder() {
     // get cart
     let cart = await CartModel.findOne({
@@ -30,8 +32,7 @@ class OrderService {
     const orderItems = [];
 
     for (const item of cart.items) {
-      // O(n)
-      const product = productMap.get(item?.productId.toString()); // O(1)
+      const product = productMap.get(item?.productId.toString());
 
       if (!product) {
         throw new AppError(`Product ${item?.productId} no longer exists`, 400);
@@ -49,7 +50,7 @@ class OrderService {
       });
     }
 
-    // 3. Calculate total
+    // Calculate total
     const total = orderItems.reduce(
       (sum, i) => sum + i.priceAtTimeOfAdd * i.quantity,
       0,
@@ -69,9 +70,10 @@ class OrderService {
 
     return order;
   }
+
   async cancelOrder(orderId: string) {
     if (!Types.ObjectId.isValid(orderId)) {
-      throw new AppError("Invalid Order  ID", 400);
+      throw new AppError("Invalid Order ID", 400);
     }
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -80,21 +82,29 @@ class OrderService {
         _id: orderId,
         userId: this.userId,
         paymentStatus: "pending",
-      }).session(session);
+      })
+        .select("orderItems status cancelReason")
+        .session(session);
+
       if (!order) {
         throw new AppError("Order not found or not cancellable", 404);
       }
-      // bulk opreations
-      const bulkOps = order.orderItems.map((item: any) => ({
-        updateOne: {
-          filter: { _id: item.productId },
-          update: {
-            $inc: { reservedStock: -item.quantity },
-          },
-        },
+      if (order.status === "CANCELLED") {
+        throw new AppError("Order already cancelled", 400);
+      }
+
+      // Empty order items
+      if (!order.orderItems || order.orderItems.length === 0) {
+        throw new AppError("Order items is empty", 400);
+      }
+
+      // Use StockReservationService for bulk release
+      const items = order.orderItems.map((item: any) => ({
+        productId: item.productId.toString(),
+        quantity: item.quantity,
       }));
-      // excute the bulk operation on the db
-      const result = await ProductModel.bulkWrite(bulkOps, { session });
+      const result = await StockReservationService.bulkRelease(items, session);
+
       if (result.matchedCount !== order.orderItems.length) {
         throw new AppError("One or more products not found", 500);
       }
@@ -104,7 +114,62 @@ class OrderService {
       await order.save({ session });
 
       await session.commitTransaction();
-      //return order;
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
+  }
+
+  async editOrder(orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new AppError("Invalid Order ID", 400);
+    }
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const order = await OrderModel.findOne({
+        _id: orderId,
+        userId: this.userId,
+        status: "PENDING",
+        paymentStatus: "pending",
+      }).session(session);
+
+      if (!order) {
+        throw new AppError("Order not found or cannot be edited", 404);
+      }
+
+      await CartModel.updateOne(
+        { userId: this.userId, status: "active" },
+        { status: "abandoned" },
+        { session },
+      );
+
+      
+      const newCart = await CartModel.create(
+        [
+          {
+            userId: this.userId,
+            status: "active",
+            items: order.orderItems.map((item: any) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              priceAtTimeOfAdd: item.priceAtTimeOfAdd,
+            })),
+          },
+        ],
+        { session },
+      );
+
+      order.status = "CANCELLED";
+      order.cancelReason = "USER_EDITED";
+      await order.save({ session });
+
+      await session.commitTransaction();
+      return newCart[0];
     } catch (err) {
       await session.abortTransaction();
       throw err;
