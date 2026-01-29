@@ -106,6 +106,7 @@ const productSchema = new Schema<IProduct>(
 );
 
 productSchema.index({ slug: 1 }, { unique: true });
+productSchema.index({ reservedStock: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ createdAt: -1 });
 

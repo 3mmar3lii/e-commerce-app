@@ -65,6 +65,11 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+OrderSchema.index({ userId: 1 }); 
+OrderSchema.index({ status: 1, paymentStatus: 1 }); 
+OrderSchema.index({ 'orderItems.productId': 1 }); 
+
+
 //  Once paid, block changes to items/total
 OrderSchema.pre("save", async function () {
   if (

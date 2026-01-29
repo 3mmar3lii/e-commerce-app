@@ -80,9 +80,19 @@ class OrderService {
         _id: orderId,
         userId: this.userId,
         paymentStatus: "pending",
-      }).session(session);
+      })
+        .select("order.items status cancelReason")
+        .session(session);
       if (!order) {
         throw new AppError("Order not found or not cancellable", 404);
+      }
+      if (order.status === "CANCELLED") {
+        throw new AppError("Order already cancelled", 400);
+      }
+
+      //  Empty order items
+      if (!order.orderItems || order.orderItems.length === 0) {
+        throw new AppError("Order items is empty", 400);
       }
       // bulk opreations
       const bulkOps = order.orderItems.map((item: any) => ({
