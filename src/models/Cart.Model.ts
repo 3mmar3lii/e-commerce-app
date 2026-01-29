@@ -38,7 +38,7 @@ const CartSchema = new Schema<ICart>(
     },
     status: {
       type: String,
-      enum: ["active", "completed"],
+      enum: ["active", "completed","abandoned"],
       default: "active",
     },
     expiresAt: {
@@ -53,8 +53,8 @@ const CartSchema = new Schema<ICart>(
 );
 
 // Ensure indexes
-CartSchema.index({ userId: 1 });
-CartSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 3600 * 5 });
+CartSchema.index({ userId: 1,status:1 });
+CartSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 CartSchema.virtual("calculatedTotalPrice").get(function (this: ICart) {
   return this.items.reduce((sum: number, item: ICartItem) => {

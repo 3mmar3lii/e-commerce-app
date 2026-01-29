@@ -37,3 +37,20 @@ export const cancelOrder = catchAsync(
     });
   },
 );
+
+export const editOrder = catchAsync(
+  async (req: AuthRequestCurrentUser, res, next) => {
+    if (!req.currentUser || !req.params.id) {
+      return next(new AppError("Authentication required", 401));
+    }
+    const orderService = new OrderService(
+      req.currentUser?._id,
+      req.params.id as string,
+    );
+    await orderService.editOrder(req.params?.id as string);
+    res.status(204).json({
+      status: "sucess",
+      data: {},
+    });
+  },
+);
