@@ -9,6 +9,7 @@ import productsRoutes from "./routes/productRoutes"
 import cartRoutes from "./routes/cartRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import reviewRoutes from "./routes/reviewRoutes";
 
 const app = express();
 app.use(helmet());
@@ -26,6 +27,7 @@ app.use("/api/v1/users", authRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/reivew", reviewRoutes);
 
 app.use("{/*any/}", (req, res, next: NextFunction) => {
   const err = new AppError(

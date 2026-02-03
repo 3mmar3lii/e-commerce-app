@@ -3,6 +3,8 @@ import { Document, Types } from "mongoose";
 export type Currency = "USD" | "EGP";
 
 export interface IProduct extends Document {
+  ratingsAverage: number;
+  ratingsQuantity: number;
   name: string;
   slug: string;
   description: string;
