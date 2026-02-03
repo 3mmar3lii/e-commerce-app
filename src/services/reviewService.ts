@@ -29,6 +29,7 @@ async function updateReview(
 
   // Only recalculate if rate actually changed
   if (newRate !== undefined && newRate !== oldRate) {
+    let newReview;
     //  Remove old rating from average
     await ReviewModel.updateProductRatingOnDelete(review.productId, oldRate);
     
