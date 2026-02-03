@@ -3,3 +3,4 @@ export const CART_POPULATION = [
   { path: "items.productId", select: "name price stock status" },
 ];
 export const CATEGORY_POPULATION = [{ path: "parentId" }];
+  

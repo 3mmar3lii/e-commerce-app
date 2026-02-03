@@ -5,10 +5,13 @@ const userSchema = new Schema(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, "Please provide your email address"],
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "Invalid email format"],
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please provide a valid email address (e.g., user@example.com)",
+      ],
     },
     password: {
       type: String,
@@ -61,5 +64,6 @@ userSchema.methods.comparePassword = async function (
 };
 
 userSchema.index({ email: 1 }, { unique: true });
+
 
 export const User = models.User || model("User", userSchema);

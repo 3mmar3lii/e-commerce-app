@@ -9,12 +9,15 @@ export class AuthService {
     name: string,
     role: string,
   ): Promise<IUserSignupInput> {
-    const user = await User.create({ email, password, name, role });
-    return user;
+    try {
+      const user = await User.create({ email, password, name, role });
+      return user;
+    } catch (err) {
+      throw new AppError(` ${err}`, 400);
+    }
   }
 
   static async signin({ email, password }: IUserSigninInput) {
-    
     if (!email || !password) {
       throw new AppError("Please provide email and password", 400);
     }
@@ -25,7 +28,7 @@ export class AuthService {
       throw new AppError("Invalid email or password", 401);
     }
     const userResponse = {
-      _id:user._id,
+      _id: user._id,
       email: user.email,
       name: user.name,
       role: user.role,

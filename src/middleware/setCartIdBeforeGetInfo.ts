@@ -11,13 +11,16 @@ export const loadUserCart = async (
   if (!req.currentUser) {
     return next(new AppError("Forbidden Action ", 401));
   }
-
   const cart = await CartModel.findOne({ userId: req.currentUser._id });
   //.populate("items.productId", "name price image")
   //.populate("userId", "name email");
+  console.log("cart",cart)
+  if (!cart) {
+    return next(new AppError("No Cart for this user , Please add products to your cart", 400));
+  }
   if (!req.params.id) {
     console.log("Cart id =", cart._id);
-    (req as any).params.id = cart._id;
+    (req as any).params.id = cart?._id;
   }
 
   next();

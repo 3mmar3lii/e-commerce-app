@@ -27,6 +27,14 @@ const productSchema = new Schema<IProduct>(
           "Slug must be lowercase, alphanumeric, and hyphen-separated (e.g., wireless-earbuds)",
       },
     },
+    ratingsAverage: {
+      type: Number,
+      default: 0,
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
     description: {
       type: String,
       required: [true, "Description is required"],
@@ -58,8 +66,8 @@ const productSchema = new Schema<IProduct>(
         message: `Currency must be one of: ${VALID_CURRENCIES.join(", ")}`,
       },
     },
-    // later i will embeded this category as it will not be 
-    // bigger in the future as this is just ecommerce demo 
+    // later i will embeded this category as it will not be
+    // bigger in the future as this is just ecommerce demo
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
@@ -111,9 +119,8 @@ productSchema.index({ tags: 1 });
 productSchema.index({ createdAt: -1 });
 
 // Compound index for common filters
-productSchema.index({  stock: 1, price: 1 });
+productSchema.index({ stock: 1, price: 1 });
 productSchema.index({ name: "text", description: "text", tags: "text" });
-
 
 // Prevent negative available stock
 productSchema.pre<IProduct>("validate", function () {
@@ -124,7 +131,12 @@ productSchema.pre<IProduct>("validate", function () {
     );
   }
 });
-
+// i will make here virtual refrence to reivew
+productSchema.virtual("reivews", {
+  ref: "Review",
+  foreignField: "productId",
+  localField: "_id",
+});
 productSchema.virtual("availableStock").get(function () {
   return Math.max(0, this.stock - this.reservedStock);
 });
