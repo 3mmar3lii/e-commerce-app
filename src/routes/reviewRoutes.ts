@@ -8,7 +8,7 @@ import {
 import { protect, restrictTo } from "../middleware/authMiddleware";
 import { setUserIdInBodyBeforeSave } from "../middleware/setUserIdInBodyBeforeSaveReview";
 
-const router = Router();
+const router = Router({mergeParams:true});
 router.use(protect);
 router
   .route("/")

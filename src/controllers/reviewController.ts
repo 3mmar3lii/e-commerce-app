@@ -6,7 +6,7 @@ import {
 import { AuthRequestCurrentUser } from "../types/auth.types";
 import AppError from "../utils/AppError";
 import catchAsync from "../utils/catchAsync";
-import { createOne, getAll} from "../utils/handlerFactory";
+import { createOne, getAll } from "../utils/handlerFactory";
 
 export const createReview = createOne(ReviewModel);
 export const editReview = catchAsync(
@@ -61,4 +61,7 @@ export const deleteReview = catchAsync(
   },
 );
 //export const getSingleReview = getOne(ReviewModel, []);
-export const getAllReviews = getAll(ReviewModel, []); // Need Merge params
+export const getAllReviews = getAll(ReviewModel, [], {
+  paramsKey: "id",
+  fieldName: "productId",
+});

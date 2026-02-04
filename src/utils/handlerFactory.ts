@@ -80,11 +80,23 @@ export type PopulateOption = {
 export const getAll = <T extends Document>(
   Model: Model<T>,
   options: PopulateOption[] | [],
+  filterParam?: { paramsKey: string; fieldName: string },
 ) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    let query = Model.find();
-    query = populateOptions(options, query);
+    let filter = {};
+    // from merge params
+    if (
+      filterParam &&
+      req.params[filterParam.paramsKey] &&
+      filterParam.fieldName
+    ) {
+      const { fieldName, paramsKey } = filterParam;
+      filter = { [fieldName]: req.params[paramsKey] };
+    }
 
+    let query = Model.find(filter);
+    query = populateOptions(options, query);
+    console.log("req.params.id => productId", req.params.id);
     const features = new APIFeatures(query as any, req.query, Model as any)
       .filter()
       .search()
