@@ -6,25 +6,30 @@ import AppError from "../utils/AppError";
 import voucher_codes from "voucher-code-generator";
 import mongoose from "mongoose";
 
-export const isDiscountValid = async (discountCode: string) => {
+export const isDiscountValid = async (discountScope:string,discountCode: string) => {
   const discountMatched = await DiscountModel.findOne({
+    scope:discountScope,
     code: discountCode,
+    isActive: true,
   });
 
   if (!discountMatched) {
-    return { valid: false };
+    return {msg:"Maybe scope or code  have issues !", valid: false };
   }
 
   const { usedCount, endsAt, isActive, maxUsed } = discountMatched;
 
-  if (!isActive) return {
-    msg: "This discount is currently inactive",
-    valid: false,
-  };
+  if (!isActive)
+    return {
+      msg: "This discount is currently inactive",
+      valid: false,
+    };
 
-  if (usedCount >= maxUsed) return { msg: "This discount has reached its usage limit", valid: false };
+  if (usedCount >= maxUsed)
+    return { msg: "This discount has reached its usage limit", valid: false };
 
-  if (endsAt && new Date() > endsAt) return { msg: `This discount expired on ${endsAt}`, valid: false };
+  if (endsAt && new Date() > endsAt)
+    return { msg: `This discount expired on ${endsAt}`, valid: false };
 
   return {
     valid: true,
@@ -48,7 +53,7 @@ export const calculateDiscountAmount = (
   if (type === "FIXED") {
     discount = value;
   }
-  const newTotal = total - discount;
+  const newTotal = Math.max(0, total - discount);
   return Math.min(newTotal, total);
 };
 
@@ -97,7 +102,7 @@ export const orderDiscount = async (
     const updatedOrder = await OrderModel.findByIdAndUpdate(
       orderId,
       {
-        total:newTotal,
+        total: newTotal,
         discountAmount: value,
         discountCode: matchedCode,
       },
@@ -140,11 +145,11 @@ export const orderDiscount = async (
     return updatedOrder;
   } catch (error) {
     await session.abortTransaction();
-    throw error; 
+    throw error;
   } finally {
     session.endSession();
   }
-};;
+};
 
 export const generateDiscount = (
   discountLength: number,

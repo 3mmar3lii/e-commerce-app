@@ -20,7 +20,7 @@ export const useDiscount = catchAsync(
       throw new AppError("Missing required fields", 400);
     }
 
-    const { valid, discountData, msg } = await isDiscountValid(discountCode);
+    const { valid, discountData, msg } = await isDiscountValid(discountScope,discountCode);
 
     if (!valid) {
       throw new AppError(msg, 400);
