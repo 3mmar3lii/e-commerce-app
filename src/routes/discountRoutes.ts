@@ -6,8 +6,9 @@ import { ensureOrderHasNoDiscount } from "../middleware/isOrderHaveDiscountBefor
 const router = express.Router();
 
 router.use(protect);
-router.route("/").post(ensureOrderHasNoDiscount, useDiscount);
-//router.route("/add-discount").post(restrictTo("seller"), addDiscount);
-router.route("/add-discount").post(addDiscount);
+router
+  .route("/")
+  .post(restrictTo("customer"), ensureOrderHasNoDiscount, useDiscount);
+router.route("/add-discount").post(restrictTo("seller"), addDiscount);
 
 export default router;
