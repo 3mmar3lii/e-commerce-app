@@ -5,16 +5,22 @@ import { IDiscount } from "../types/discount.types";
 import AppError from "../utils/AppError";
 import voucher_codes from "voucher-code-generator";
 import mongoose from "mongoose";
+import ProductModel from "../models/Product.Model";
+import { CartModel } from "../models/Cart.Model";
+import { ICartItem } from "../types/cart.types";
 
-export const isDiscountValid = async (discountScope:string,discountCode: string) => {
+export const isDiscountValid = async (
+  discountScope: string,
+  discountCode: string,
+) => {
   const discountMatched = await DiscountModel.findOne({
-    scope:discountScope,
+    scope: discountScope,
     code: discountCode,
     isActive: true,
   });
 
   if (!discountMatched) {
-    return {msg:"Maybe scope or code  have issues !", valid: false };
+    return { msg: "Maybe scope or code  have issues !", valid: false };
   }
 
   const { usedCount, endsAt, isActive, maxUsed } = discountMatched;
@@ -150,6 +156,71 @@ export const orderDiscount = async (
     session.endSession();
   }
 };
+
+export const productDiscount = async (
+  productId: string,
+  discountData: IDiscount,
+  discountScope: string,
+  userId: string,
+) => {
+  if (discountScope !== "PRODUCT") {
+    throw new AppError("Invalid discount scope for product discount", 400);
+  }
+
+  if (!userId) {
+    throw new AppError("User not authenticated", 401);
+  }
+
+  if (!productId) {
+    throw new AppError("Product ID is required", 400);
+  }
+
+  const { value, type } = discountData;
+
+  const productExists = await ProductModel.exists({ _id: productId });
+  if (!productExists) {
+    throw new AppError("Product not found", 404);
+  }
+
+  const cart = await CartModel.findOne({ userId });
+  if (!cart) {
+    throw new AppError("User has no cart", 400);
+  }
+
+  const cartItem = cart.items.find(
+    (item: ICartItem) => item.productId.toString() === productId,
+  );
+
+  if (!cartItem) {
+    throw new AppError("Product not found in cart", 400);
+  }
+
+  //// 5. Prevent double discount on same product
+  //if (cartItem.discountCode) {
+  //  throw new AppError("Discount already applied to this product", 400);
+  //}
+
+  const discountedUnitPrice = calculateDiscountAmount(
+    cartItem.priceAtTimeOfAdd,
+    type,
+    value,
+  );
+
+  // 7. Apply discount to cart item
+  cartItem.priceAtTimeOfAdd = discountedUnitPrice;
+  //cartItem.discountCode = discountCode;
+
+  // 8. Recalculate cart total
+  cart.totalPrice = cart.items.reduce((sum: number, item: ICartItem) => {
+    const unitPrice =  item.priceAtTimeOfAdd;
+    return sum + unitPrice * item.quantity;
+  }, 0);
+
+  await cart.save();
+
+  return cart;
+};
+
 
 export const generateDiscount = (
   discountLength: number,
