@@ -24,7 +24,12 @@ const OrderSchema = new mongoose.Schema(
         message: "Duplicate products in order are not allowed",
       },
     },
-    total: { type: Number, required: true, min: 0 },
+    total: {
+      type: Number,
+      required: true,
+      min: 0,
+      set: (v: number) => Math.round(v * 100) / 10,
+    },
     orderNumber: { type: String, required: true, min: 0 },
     status: {
       type: String,
