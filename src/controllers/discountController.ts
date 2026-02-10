@@ -2,6 +2,7 @@ import {
   generateDiscount,
   isDiscountValid,
   orderDiscount,
+  productDiscount,
   saveDiscount,
 } from "../services/discountService";
 import { AuthRequestCurrentUser } from "../types/auth.types";
@@ -14,13 +15,16 @@ export const useDiscount = catchAsync(
       throw new AppError("Unauthorized", 401);
     }
 
-    const { discountCode, discountScope, orderId } = req.body;
+    const { discountCode, discountScope, orderId, productId } = req.body;
 
-    if (!discountCode || !discountScope || !orderId) {
+    if (!discountCode || !discountScope) {
       throw new AppError("Missing required fields", 400);
     }
 
-    const { valid, discountData, msg } = await isDiscountValid(discountCode);
+    const { valid, discountData, msg } = await isDiscountValid(
+      discountScope,
+      discountCode,
+    );
 
     if (!valid) {
       throw new AppError(msg, 400);
@@ -31,7 +35,26 @@ export const useDiscount = catchAsync(
         400,
       );
     }
-    await orderDiscount(discountData!, discountScope, discountCode, orderId);
+    switch (discountScope) {
+      case "ORDER": {
+        await orderDiscount(
+          discountData!,
+          discountScope,
+          discountCode,
+          orderId,
+        );
+        break;
+      }
+      case "PRODUCT": {
+        await productDiscount(
+          productId,
+          discountData,
+          discountScope,
+          req.currentUser._id,
+        );
+        break;
+      }
+    }
 
     res.status(200).json({ message: "Discount applied successfully" });
   },

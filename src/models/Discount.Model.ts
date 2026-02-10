@@ -8,7 +8,6 @@ const DiscountSchema = new Schema<IDiscount>(
       required: [true, "Discount code is required"],
       unique: true,
     },
-
     type: {
       type: String,
       enum: ["PERCENT", "FIXED"],
@@ -100,4 +99,5 @@ DiscountSchema.statics.mangeDiscountActivaction = async function (this: any) {
 };
 
 DiscountSchema.index({ isActive: 1 });
+DiscountSchema.index({ code: 1 });
 export default mongoose.model<IDiscount>("Discount", DiscountSchema);
