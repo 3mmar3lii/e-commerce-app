@@ -11,6 +11,8 @@ import orderRoutes from "./routes/orderRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import reviewRoutes from "./routes/reviewRoutes";
 import discountRoutes from "./routes/discountRoutes";
+import imagekitWebhookRoute from "./routes/webhookRoute"
+
 
 const app = express();
 app.use(helmet());
@@ -30,7 +32,7 @@ app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/reivew", reviewRoutes);
 app.use("/api/v1/discount", discountRoutes);
-
+app.use("/api/v1/webhook", imagekitWebhookRoute);
 app.use("{/*any/}", (req, res, next: NextFunction) => {
   const err = new AppError(
     `Can't find ${req.originalUrl}  on this server!`,
