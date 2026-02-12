@@ -1,0 +1,21 @@
+To Do :
+1-Need to integrate with stripe
+2-Complete run test performance for  all endpoints
+3-Integrate with redis for cashing
+4-Check Queries performance that have O(n) or higer and  try to optimize it => O(1) or O(log n) or better 
+5-Search about Factory design pattern and use it OrderService
+
+
+Issues:
+1-Need to fix formData => add product => product data into body + image into formData => problem 
+2-
+
+
+Development:
+1-Review code and see any dupicate code 
+
+
+Production:
+1-Include garafna to montorize the app on Production
+2-Search on the ability to use logger in our application
+3-Search about the apidog
