@@ -66,8 +66,6 @@ const productSchema = new Schema<IProduct>(
         message: `Currency must be one of: ${VALID_CURRENCIES.join(", ")}`,
       },
     },
-    // later i will embeded this category as it will not be
-    // bigger in the future as this is just ecommerce demo
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
@@ -76,9 +74,7 @@ const productSchema = new Schema<IProduct>(
     images: [
       {
         type: String,
-        validate: {
-          validator: (v: string) => v.startsWith("http"),
-        },
+        require: [true, "product must have image !"],
       },
     ],
     stock: {
