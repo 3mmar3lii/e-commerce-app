@@ -38,7 +38,7 @@ const CartSchema = new Schema<ICart>(
     },
     status: {
       type: String,
-      enum: ["active", "completed","abandoned"],
+      enum: ["`active`", "completed","abandoned"],
       default: "active",
     },
     expiresAt: {

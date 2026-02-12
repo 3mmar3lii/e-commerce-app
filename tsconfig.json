@@ -17,7 +17,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "load-test.js"  ],
   "exclude": [
     "node_modules",
     "dist"
