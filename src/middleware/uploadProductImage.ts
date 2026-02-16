@@ -1,7 +1,6 @@
 import { AuthRequestCurrentUser } from "./../types/auth.types";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/AppError";
-import ProductModel from "../models/Product.Model";
 import uploadImage from "../utils/imageUpload";
 
 export const uploadProductImage = catchAsync(
@@ -30,8 +29,7 @@ export const uploadProductImage = catchAsync(
         ),
       );
     }
-    const product = new ProductModel({ images: [result.url] });
-    await product.save({ validateBeforeSave: false });
+    req.body.images = [result.url];
     next();
-  }
+  },
 );

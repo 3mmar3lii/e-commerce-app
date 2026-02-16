@@ -34,7 +34,6 @@ export const getOne = <T extends Document>(
 export const createOne = <T extends Document>(Model: Model<T>) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const doc = await Model.create(req.body);
-
     res.status(201).json({
       status: "success",
       data: doc,

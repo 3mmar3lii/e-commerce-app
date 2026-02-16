@@ -71,12 +71,10 @@ const productSchema = new Schema<IProduct>(
       ref: "Category",
       required: [true, "Category is required"],
     },
-    images: [
-      {
-        type: String,
-        require: [true, "product must have image !"],
-      },
-    ],
+    images: {
+      type: [String],
+      required: [true, "Product must have at least one image"],
+    },
     stock: {
       type: Number,
       required: true,
