@@ -4,7 +4,7 @@ To Do :
 3-Integrate with redis for cashing
 4-Check Queries performance that have O(n) or higer and  try to optimize it => O(1) or O(log n) or better 
 5-Search about Factory design pattern and use it OrderService
-
+6-Integrate with imagekit webhook => done
 
 Issues:
 1-Need to fix formData => add product => product data into body + image into formData => problem 

@@ -33,13 +33,18 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/reivew", reviewRoutes);
 app.use("/api/v1/discount", discountRoutes);
 app.use("/api/v1/webhook", imagekitWebhookRoute);
-app.use("{/*any/}", (req, res, next: NextFunction) => {
-  const err = new AppError(
-    `Can't find ${req.originalUrl}  on this server!`,
-    404,
-  );
-  next(err);
-});
+// Old way express to handle un supported routes 
+//app.use("{/*any/}", (req, res, next: NextFunction) => {
+//  const err = new AppError(
+//    `Can't find ${req.originalUrl}  on this server!`,
+//    404,
+//  );
+//  next(err);
+//});
+// New way to handle global error 
+app.use((req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl}  on this server!`,404));
+})
 
 app.use(errorMiddleware);
 export { app };
