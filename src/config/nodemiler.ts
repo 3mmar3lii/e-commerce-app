@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import AppError from "../utils/AppError";
 
-if (!process.env.SMTP_USER || process.env.SMTP_PASS) {
+if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
   throw new AppError(`Missing important required fields to send email`, 400);
 }
 
