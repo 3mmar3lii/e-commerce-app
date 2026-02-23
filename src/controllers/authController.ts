@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import { AuthService } from "../services/authService";
 import createJwtToken from "../utils/jwtUtils";
-import { IUserSignupInput } from "../types/auth.types";
+import {
+  AuthRequestCurrentUser,
+  AuthUserCurrent,
+  IUserSignupInput,
+} from "../types/auth.types";
 import AppError from "../utils/AppError";
 
 function createSendToken(
@@ -48,5 +52,20 @@ export const signin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = await AuthService.signin(req.body);
     createSendToken(userData, 200, res);
+  },
+);
+
+export const updatePassword = catchAsync(
+  async (req: AuthRequestCurrentUser, res, next) => {
+    if (!req.currentUser) {
+      return next(new AppError(`Authentecation failed please login`, 401));
+    }
+    const { newPassword, currentPassword } = req.body;
+    const user = await AuthService.updatePassword({
+      currentPassword,
+      newPassword,
+      userId: req.currentUser._id,
+    });
+    createSendToken(user, 200, res);
   },
 );

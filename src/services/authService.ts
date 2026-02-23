@@ -1,6 +1,12 @@
 import { User } from "../models/User.Model";
-import { IUserSigninInput, IUserSignupInput } from "../types/auth.types";
+import bcrypt from "bcrypt";
+import {
+  IUserSigninInput,
+  IUserSignupInput,
+  IUserUpdatePassword,
+} from "../types/auth.types";
 import AppError from "../utils/AppError";
+import createJwtToken from "../utils/jwtUtils";
 
 export class AuthService {
   static async signup(
@@ -35,5 +41,40 @@ export class AuthService {
       createdAt: user.createdAt,
     };
     return userResponse;
+  }
+
+  static async updatePassword({
+    currentPassword,
+    newPassword,
+    userId,
+  }: IUserUpdatePassword) {
+    if (!userId) {
+      throw new AppError(`You are not loged in !`, 401);
+    }
+    if (!currentPassword || !newPassword) {
+      throw new AppError(
+        `Please enter current password and new password to update`,
+        400,
+      );
+    }
+    if (currentPassword === newPassword) {
+      throw new AppError(`New password must be different`, 400);
+    }
+
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      throw new AppError("Authentication failed", 401);
+    }
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) {
+      throw new AppError(
+        `Mismatching between current password and user password`,
+        400,
+      );
+    }
+    // update password
+    user.password = newPassword;
+    await user.save();
+    return user;
   }
 }

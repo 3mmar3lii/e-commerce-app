@@ -30,3 +30,9 @@ export interface AuthUserCurrent {
   name: string;
   role: UserRole;
 }
+
+export interface IUserUpdatePassword {
+  currentPassword: string;
+  newPassword: string;
+  userId: string;
+}
