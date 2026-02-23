@@ -6,7 +6,7 @@ import {
   IUserUpdatePassword,
 } from "../types/auth.types";
 import AppError from "../utils/AppError";
-import createJwtToken from "../utils/jwtUtils";
+import { buildResetPasswordEmail, sendEmail } from "../utils/sendEmail";
 
 export class AuthService {
   static async signup(
@@ -77,4 +77,29 @@ export class AuthService {
     await user.save();
     return user;
   }
+
+  static async forgetPassword(email: string, protocol: string, host: string) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new AppError(`User not found`, 400);
+    }
+    const token = user.createResetToken();
+    await user.save({ runValidators: false });
+    // Build url
+    let mailOptions = buildResetPasswordEmail({
+      protocol,
+      host,
+      user,
+      token,
+    });
+    const res = await sendEmail(mailOptions);
+    if (!res.ok) {
+      console.error("Email Error:", res.error);
+      throw new AppError(`${res.error}`, 500);
+    } else {
+      console.log("Email Sent:", res.response);
+    }
+  }
+
+  static async resetPassword() {}
 }

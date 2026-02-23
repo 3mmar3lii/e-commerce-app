@@ -1,13 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import crypto from "crypto";
 import catchAsync from "../utils/catchAsync";
 import { AuthService } from "../services/authService";
 import createJwtToken from "../utils/jwtUtils";
-import {
-  AuthRequestCurrentUser,
-  AuthUserCurrent,
-  IUserSignupInput,
-} from "../types/auth.types";
+import { AuthRequestCurrentUser, IUserSignupInput } from "../types/auth.types";
 import AppError from "../utils/AppError";
+import { User } from "../models/User.Model";
 
 function createSendToken(
   user: IUserSignupInput,
@@ -69,3 +67,51 @@ export const updatePassword = catchAsync(
     createSendToken(user, 200, res);
   },
 );
+
+export const forgetPassword = catchAsync(async (req, res, next) => {
+  const email = req.body;
+  await AuthService.forgetPassword(email, req.protocol, req.get("host")!);
+});
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const { resetToken } = req.params;
+
+  if (!resetToken) {
+    return next(new AppError("Reset token is required", 400));
+  }
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(String(resetToken))
+    .digest("hex");
+
+  const { newPassword, confirmPassword } = req.body;
+
+  if (!newPassword || !confirmPassword) {
+    return next(
+      new AppError("Please provide new password and confirm password", 400),
+    );
+  }
+
+  if (newPassword !== confirmPassword) {
+    return next(new AppError("Passwords do not match", 400));
+  }
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError("Invalid or expired token", 400));
+  }
+
+  user.password = newPassword;
+  user.passwordChangedAt = Date.now() - 1000;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+
+  await user.save();
+
+  createSendToken(user, 200, res);
+});
