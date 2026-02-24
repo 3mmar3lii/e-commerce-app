@@ -6,7 +6,6 @@ const DiscountSchema = new Schema<IDiscount>(
     code: {
       type: [String],
       required: [true, "Discount code is required"],
-      unique: true,
     },
     type: {
       type: String,

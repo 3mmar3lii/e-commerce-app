@@ -5,5 +5,14 @@
   "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\routes\\userRoutes.ts": 14,
   "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\models\\User.Model.ts": 72,
   "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\config\\nodemiler.ts": 16,
-  "c:\\Users\\Hello\\Desktop\\e-commerce app\\.vscode\\codepause-baselines.json": 8
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\.vscode\\codepause-baselines.json": 8,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\dist\\server.js": 17,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\dist\\app.js": 31,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\dist\\routes\\cartRoutes.js": 11,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\.env": 12,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\app.ts": 50,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\server.ts": 17,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\.vscode\\launch.json": 22,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\controllers\\discountController.ts": 100,
+  "c:\\Users\\Hello\\Desktop\\e-commerce app\\src\\models\\Discount.Model.ts": 103
 }
